@@ -8,8 +8,6 @@ Usage: on human benchmark website.
 import time
 import threading
 from pynput.mouse import Button, Controller
-from pynput.keyboard import Listener, KeyCode
-from PIL import Image
 from PIL import ImageGrab
 
 # VARIABLES
