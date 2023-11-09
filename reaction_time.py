@@ -9,54 +9,37 @@ import time
 import threading
 from pynput.mouse import Button, Controller
 from pynput.keyboard import Listener, KeyCode
+from PIL import Image
+from PIL import ImageGrab
 
 # VARIABLES
-delay = 0.001
 button = Button.left
-start_stop_key = KeyCode(char='a')
-stop_key = KeyCode(char='b')
+pixel_not_found = True
+green_found = 0
+green = (75, 219, 106)
 
 # CLASSES
 class ClickMouse(threading.Thread):
-    def __init__(self, delay, button):
+    def __init__(self, button):
         super(ClickMouse, self).__init__()
-        self.delay = delay
-        self.button = button
-        self.running = False
-        self.program_running = True
-    
-    def start_clicking(self):
-        self.running = True
-        
-    def stop_clicking(self):
-        self.running = False
-        
-    def exit(self):
-        self.stop_clicking()
-        self.program_running = False
         
     def run(self):
-        while self.program_running:
-            while self.running:
-                mouse.click(self.button)
-                time.sleep(self.delay)
-            time.sleep(0.1)
-
-# FUNCTIONS
-def on_press(key):
-    if key == start_stop_key:
-        if click_thread.running:
-            click_thread.stop_clicking()
-        else:
-            click_thread.start_clicking()
-    elif key == stop_key:
-        click_thread.exit()
-        listener.stop()
+        mouse.press(self.button)
+        mouse.release(self.button)
 
 # MAIN PROGRAM
-mouse = Controller()
-click_thread = ClickMouse(delay, button)
-click_thread.start()
 
-with Listener(on_press = on_press) as listener:
-    listener.join()
+mouse = Controller()
+click = ClickMouse(button)
+
+while green_found < 5:
+    img = ImageGrab.grab(bbox=None)
+    pixel = img.getpixel((764, 407))
+    if pixel == green:
+        click.run()
+        time.sleep(2)
+        click.run()
+        green_found += 1
+
+# 764, 407 middle of laptop screen
+# 2911, 504 middle of 2nd monitor
